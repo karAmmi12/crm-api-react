@@ -2,22 +2,31 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use App\Repository\UserRepository;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ApiResource]
+#[UniqueEntity('email', message:"Un utilisateur ayant cette email existe déjà!")]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["invoices_read","customers_read"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[Assert\NotBlank(message:"l'email est obligatoire!")]
+    #[Assert\Email(message:"le format de l'email doit être valide!")]
     private ?string $email = null;
 
     #[ORM\Column]
@@ -27,12 +36,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Assert\NotBlank(message:"le mot de passe est obligatoire!")]
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["invoices_read","customers_read"])]
+    #[Assert\NotBlank(message:"le prénom est obligatoire!")]
+    #[Assert\Length(
+        min:3,
+        max:150, 
+        minMessage:"le prénom doit faire entre 3 et 150 caractères",
+        maxMessage:"le prénom doit faire entre 3 et 150 caractères")]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["invoices_read","customers_read"])]
+    #[Assert\NotBlank(message:"le nom est obligatoire!")]
+    #[Assert\Length(
+        min:3,
+        max:150, 
+        minMessage:"le nom doit faire entre 3 et 150 caractères",
+        maxMessage:"le nom doit faire entre 3 et 150 caractères")]
     private ?string $lastName = null;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Customer::class)]

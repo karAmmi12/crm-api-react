@@ -2,33 +2,79 @@
 
 namespace App\Entity;
 
-use App\Repository\InvoiceRepository;
+use App\Entity\User;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\InvoiceRepository;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: InvoiceRepository::class)]
+#[ApiResource(
+    attributes: 
+        ["pagination_enabled" => true,
+         "pagination_items_per_page" => 20,
+         "order"=> ["sentAt" => "desc"]
+        ],
+    normalizationContext: ['groups' => ['invoices_read']],
+    denormalizationContext: ['disable_type_enforcement' => true ]
+
+    
+)]
 class Invoice
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["invoices_read","customers_read"])]
     private ?int $id = null;
 
     #[ORM\Column]
-    private ?float $amount = null;
+    #[Groups(["invoices_read","customers_read"])]
+    #[Assert\NotBlank(message:"le montant de la facture est obligatoire!")]
+    #[Assert\Type(
+        type: 'numeric',
+        message: "le montant doit être un chiffre!"
+    )]
+    private $amount = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(["invoices_read","customers_read"])]
+    
+    #[Assert\NotBlank(message:"la date d'envoie doit être renseignée!")]
+
     private ?\DateTimeInterface $sentAt = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["invoices_read","customers_read"])]
+    #[Assert\NotBlank(message:"le status doit être renseigné !")]
+    #[Assert\Choice(['PAID', 'CANCELED', 'SENT'])]
     private ?string $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'invoices')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(["invoices_read"])]
+    #[Assert\NotBlank(message:"le client de la facturedoit être renseigné !")]
     private ?Customer $customer = null;
 
     #[ORM\Column]
-    private ?int $invNumber = null;
+    #[Groups(["invoices_read","customers_read"])]
+    #[Assert\NotBlank(message:"le numero de la facture doit être renseigné!")]
+    #[Assert\Type(
+        type: 'integer',
+        message: "le numero doit être un entier!"
+    )]
+    private $invNumber = null;
+
+    /**
+     * Récuperer le user à qui appartient la facture
+     * @Groups({"invoices_read"})
+     * @return User
+     */
+    public function getUser() : User {
+        return $this->customer->getUser();
+    }
 
     public function getId(): ?int
     {
@@ -40,7 +86,7 @@ class Invoice
         return $this->amount;
     }
 
-    public function setAmount(float $amount): self
+    public function setAmount($amount): self
     {
         $this->amount = $amount;
 
@@ -88,7 +134,7 @@ class Invoice
         return $this->invNumber;
     }
 
-    public function setInvNumber(int $invNumber): self
+    public function setInvNumber($invNumber): self
     {
         $this->invNumber = $invNumber;
 

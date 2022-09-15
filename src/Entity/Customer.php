@@ -2,40 +2,101 @@
 
 namespace App\Entity;
 
-use App\Repository\CustomerRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\CustomerRepository;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
+#[ApiResource(
+    collectionOperations: ["GET","POST"],
+    itemOperations: ["GET","PUT","DELETE"],
+    
+    normalizationContext: ['groups' => ['customers_read']]
+)]
+#[ApiFilter(SearchFilter::class)]
+#[ApiFilter(OrderFilter::class)]
 class Customer
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["customers_read","invoices_read"])]
+    
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["customers_read","invoices_read"])]
+    #[Assert\NotBlank(message:"le prénom est obligatoire!")]
+    #[Assert\Length(
+        min:3,
+        max:150, 
+        minMessage:"le prénom doit faire entre 3 et 150 caractères",
+        maxMessage:"le prénom doit faire entre 3 et 150 caractères")]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["customers_read","invoices_read"])]
+    #[Assert\NotBlank(message:"le nom est obligatoire!")]
+    #[Assert\Length(
+        min:3,
+        max:150, 
+        minMessage:"le nom doit faire entre 3 et 150 caractères",
+        maxMessage:"le nom doit faire entre 3 et 150 caractères")]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(["customers_read","invoices_read"])]
+    #[Assert\NotBlank(message:"l'email est obligatoire!")]
+    #[Assert\Email(message:"le format de l'email doit être valide!")]
     private ?string $email = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(["customers_read","invoices_read"])]
     private ?string $company = null;
 
     #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Invoice::class)]
+    #[Groups(["customers_read"])]
+    #[ApiSubresource]
     private Collection $invoices;
 
     #[ORM\ManyToOne(inversedBy: 'customers')]
+    #[Groups(["customers_read"])]
+    #[Assert\NotBlank(message:"l'utilisateur est obligatoire!")]
     private ?User $user = null;
 
     public function __construct()
     {
         $this->invoices = new ArrayCollection();
+    }
+
+    /**
+     * Récuperer le total des invoices
+     * @Groups({"customers_read"})
+     * @return float
+     */
+    public function getTotalAmount():float{
+        return array_reduce($this->invoices->toArray(),function($total, $invoice){
+            return $total + $invoice->getAmount();
+        }, 0);
+    }
+
+    /**
+     * Récupérer le total non payé
+     * @Groups({"customers_read"})
+     * @return float
+     */
+    public function getUnpaidAmount():float{
+        return array_reduce($this->invoices->toArray(),function($total, $invoice){
+            return $total + ($invoice->getStatus()==="PAID" || $invoice->getStatus()==="CANCELED" ? 0 : $invoice->getAmount());
+        }, 0);
     }
 
     public function getId(): ?int
