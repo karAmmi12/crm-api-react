@@ -14,17 +14,20 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['users_read']]
+)]
 #[UniqueEntity('email', message:"Un utilisateur ayant cette email existe déjà!")]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["invoices_read","customers_read"])]
+    #[Groups(["invoices_read","customers_read",'users_read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[Groups(["invoices_read","customers_read",'users_read'])]
     #[Assert\NotBlank(message:"l'email est obligatoire!")]
     #[Assert\Email(message:"le format de l'email doit être valide!")]
     private ?string $email = null;
@@ -40,7 +43,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["invoices_read","customers_read"])]
+    #[Groups(["invoices_read","customers_read",'users_read'])]
     #[Assert\NotBlank(message:"le prénom est obligatoire!")]
     #[Assert\Length(
         min:3,
@@ -50,7 +53,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["invoices_read","customers_read"])]
+    #[Groups(["invoices_read","customers_read",'users_read'])]
     #[Assert\NotBlank(message:"le nom est obligatoire!")]
     #[Assert\Length(
         min:3,
