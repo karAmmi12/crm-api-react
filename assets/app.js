@@ -1,22 +1,32 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import  ReactDOM  from 'react-dom/client';
 import './styles/app.css';
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
-import { HashRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route,Navigate } from 'react-router-dom';
 import CustomersPage from './pages/CustomersPage';
 import InvoicesPage from './pages/InvoicesPage';
+import LoginPage from './pages/LoginPage';
+import AuthAPI from './services/authAPI';
+
+
+
+AuthAPI.setup();
 
 const App = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(AuthAPI.isAuthenticated());
+
+  console.log(isAuthenticated);
     return (
         <HashRouter>
-          <Navbar/>
+          <Navbar isAuthenticated={isAuthenticated} onLogout={setIsAuthenticated}/>
           <main className="container pt-5">
             <Routes>
               <Route path="/" element={<HomePage/>}/>
-              <Route path="/customers" element={<CustomersPage/>}/>
-              <Route path="/invoices" element={<InvoicesPage/>}/>
+              <Route path="/customers" element={isAuthenticated && <CustomersPage/> || <Navigate to="/" replace />}/>
+              <Route path="/invoices" element={isAuthenticated && <InvoicesPage/> || <Navigate to="/" replace /> }/>
+              <Route path="/login" element={!isAuthenticated && <LoginPage onLogin={setIsAuthenticated}/>|| <Navigate to="/" replace />}/>
             </Routes>
             
           </main>
