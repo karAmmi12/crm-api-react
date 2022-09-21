@@ -49,7 +49,7 @@ class Invoice
     #[ORM\Column(length: 255)]
     #[Groups(["invoices_read","customers_read"])]
     #[Assert\NotBlank(message:"le status doit être renseigné !")]
-    #[Assert\Choice(['PAID', 'CANCELED', 'SENT'])]
+    #[Assert\Choice(['PAID', 'CANCELLED', 'SENT'])]
     private ?string $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'invoices')]

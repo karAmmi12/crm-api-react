@@ -1,6 +1,6 @@
-import axios from 'axios';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Field from '../components/forms/Field';
 import AuthAPI from '../services/authAPI';
 
 const LoginPage = ({onLogin}) => {
@@ -46,32 +46,26 @@ const LoginPage = ({onLogin}) => {
         <>
             <h1>Connexion</h1>
             <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label htmlFor="username">Email</label>
-                    <input 
-                        value={credentials.username}
-                        onChange={handleChange}
-                        type="email" 
-                        id="password" 
-                        name="username" 
-                        placeholder="Adresse email de connexion" 
-                        className={"form-control" + (error && " is-invalid")} 
-                    />
-                    {error && <p className="invalid-feedback">{error} </p>}
-                </div>
-                <div className="form-group">
-                    <label htmlFor="password">Mot de passe</label>
-                    <input 
-                        value={credentials.password}
-                        onChange={handleChange}
-                        type="password" 
-                        id="password" 
-                        placeholder="Mot de passe" 
-                        name="password" 
-                        className="form-control" 
-                    />
-                    
-                </div>
+                <Field
+                    label ="Email" 
+                    name ="username"
+                    value = {credentials.username}
+                    onChange={handleChange}
+                    placeholder="Adresse email de connexion"
+                    error = {error}
+
+                />
+                <Field
+                    label ="Mot de passe" 
+                    name ="password"
+                    value = {credentials.password}
+                    onChange={handleChange}
+                    placeholder="Mot de passe"
+                    type="password"
+                    error = ""
+
+                />
+                
                 <div className="form-group">
                     <button type="submit" className="btn btn-success">Me connecter</button>
                 </div>

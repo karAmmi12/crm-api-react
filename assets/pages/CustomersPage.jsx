@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import Pagination from '../components/Pagination';
 import CustomersAPI from '../services/customersAPI';
 
@@ -82,7 +83,11 @@ const CustomersPage = props => {
     
     return (
         <>
-            <h1>Liste des client</h1>
+            <div className="d-flex justify-content-between mb-3 align-items-center">
+                <h1>Liste des client</h1>
+                <Link to="/customers/new" className='btn btn-primary'>Ajouter un client</Link>
+            </div>
+            
             <div className="form-group">
                 <input type="text" onChange={handleSearch} value={search} className="form-control" placeholder="Rechercher..." />
 
