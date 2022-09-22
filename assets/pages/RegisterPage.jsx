@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import Field from '../components/forms/Field';
 import UsersAPI from '../services/usersAPI';
 
@@ -36,14 +37,16 @@ const RegisterPage = () => {
         if (user.password !== user.passwordConfirm) {
             apiErrors.passwordConfirm = "votre mot de passe ne correspond pas au précedent! ";
             setErrors(apiErrors)
+            toast.error("Des erreurs dans votre formulaire!")
             return;
 
             
         }
        try {
             await UsersAPI.register(user)
-            //todo flash succès
+            
             setErrors({})
+            toast.success("Vous êtes désormais inscrit! vous pouvez vous connecter 👌")
             navigate('/login');
         
 
@@ -58,6 +61,8 @@ const RegisterPage = () => {
                     apiErrors[violation.propertyPath] = violation.message
                 });
                 setErrors(apiErrors);
+
+                toast.error("Des erreurs dans votre formulaire!")
 
                 
             }

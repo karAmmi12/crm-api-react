@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import Field from '../components/forms/Field';
 import CustomersAPI from '../services/customersAPI';
 
@@ -33,7 +34,7 @@ const CustomerPage = () => {
     
         } catch (error) {
             
-            //TODO : notification d'erreurs
+            toast.error("Le client n'a pas pu être chargé !")
             navigate('/customers')
         }
         
@@ -60,25 +61,29 @@ const CustomerPage = () => {
         
         try {
             if (editing) {
-                await update(id, customer)
-                //TODO NOTIFICATION DE SUCCES
+                
+                await CustomersAPI.update(id, customer)
+                toast.success("Le client à bien été modifié!")
+                setErrors({});
             }else{
-                await create(customer);
+                await CustomersAPI.create(customer);
+                toast.success("Le client à bien été enregistré!")
+                setErrors({});
                 navigate('/customers') 
 
-
-                //TODO/ NOTIFICATION DE SUCCES
             }
                 
-            setErrors({});
-        } catch (error) {
-            if(error.response.data.violations) {
+            
+        } catch ({response}) {
+            console.log(response.data.violations)
+            const { violations } = response.data;
+            if(violations) {
                 const apiErrors ={};
-                error.response.data.violations.forEach(violation => {
-                    apiErrors[violation.propertyPath] = violation.message
+                violations.forEach(({propertyPath, message}) => {
+                    apiErrors[propertyPath] = message
                 });
                 setErrors(apiErrors);
-                //TODO NOTIFICATION D'ERREURS
+                toast.error("Des erreurs dans votre formulaire !")
             }
             
             

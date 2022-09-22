@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import Field from '../components/forms/Field';
 import AuthAPI from '../services/authAPI';
 
@@ -30,12 +31,13 @@ const LoginPage = ({onLogin}) => {
             await AuthAPI.authenticate(credentials);
             setError("");
             onLogin(true);
+            toast.success("Vous êtes connecté ")
             navigate("/customers")
            
         } catch (error) {
             console.log(error.response)
             setError("Aucun compte ne possède cette adresse ou les informations ne correspondent pas !")
-            
+            toast.error("une erreur est survenue !!")
         }
 
     }

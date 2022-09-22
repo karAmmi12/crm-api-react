@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import Field from '../components/forms/Field';
 import Select from '../components/forms/Select';
 import CustomersAPI from '../services/customersAPI';
@@ -40,8 +41,9 @@ const InvoicePage = () => {
             
         } catch (error) {
             console.log(error.response)
+            toast.error("Impossible de charger les clients !")
             navigate('/invoices')
-            //todo notification erreur
+            
 
            
         }
@@ -56,7 +58,7 @@ const InvoicePage = () => {
             
         } catch (error) {
             console.log(error.response)
-            //todo notification erreur
+            toast.error('Impossible de charger la facture demandée !')
             navigate('/invoices')
         }
 
@@ -92,14 +94,14 @@ const InvoicePage = () => {
             if (editing) {
                 console.log(invoice)
                 await InvoicesAPI.update(id, invoice)
-                //TODO notification succes
+                toast.success("La facture a bien été modifié.")
                 setErrors({});
                 
                 
 
             } else {
                 await InvoicesAPI.create(invoice)
-                //TODO notification succes
+                toast.success("La facture a bien été enregistré.")
                 setErrors({});
                 navigate('/invoices')
                     
@@ -115,7 +117,7 @@ const InvoicePage = () => {
                     apiErrors[violation.propertyPath] = violation.message
                 });
                 setErrors(apiErrors);
-                //TODO NOTIFICATION D'ERREURS
+                toast.error("Des erreurs dans votre formulaire!")
             }
         }
     }
