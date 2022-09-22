@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Entity\Invoice;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use PhpParser\Node\Stmt\TryCatch;
 
 /**
  * @extends ServiceEntityRepository<Invoice>
@@ -23,7 +24,10 @@ class InvoiceRepository extends ServiceEntityRepository
     }
 
     public function findNextInvNumber(User $user){
-        return $this->createQueryBuilder("i")
+
+        try {
+            
+            return $this->createQueryBuilder("i")
                     ->select("i.invNumber")
                     ->join("i.customer", "c")
                     ->where("c.user = :user")
@@ -33,6 +37,12 @@ class InvoiceRepository extends ServiceEntityRepository
                     ->getQuery()
                     ->getSingleScalarResult()+1;
 
+
+        } catch (\Exception $e) {
+            return 1;
+        }
+
+        
 
     }
 
