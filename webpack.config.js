@@ -7,6 +7,7 @@ if (!Encore.isRuntimeEnvironmentConfigured()) {
     Encore.configureRuntimeEnvironment(process.env.NODE_ENV || 'dev');
 }
 
+
 Encore
     // directory where compiled assets will be stored
     .setOutputPath('public/build/')
@@ -76,7 +77,16 @@ Encore
     Encore.configureDefinePlugin((options) => {
         options["process.env.API_URL"] = process.env.API_URL;
     })
+
+    
+
+    
    
 ;
 
 module.exports = Encore.getWebpackConfig();
+
+
+
+  
+

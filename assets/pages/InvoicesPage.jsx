@@ -141,6 +141,8 @@ const InvoicesPage = (props) => {
                                     className="btn btn-sm btn-danger">
                                     Supprimer
                                 </button>
+                                <Link to={`/pdf/${invoice.id}`} className="btn btn-sm btn-dark">Editer</Link>
+                                
                             </td>
                         </tr>)}
                 </tbody>}

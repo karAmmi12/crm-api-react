@@ -15,6 +15,11 @@ import RegisterPage from './pages/RegisterPage';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import ViewPdf from './pages/ViewPdf';
+import ProfilePage from './pages/ProfilePage';
+import EditProfilePage from './pages/EditProfilePage';
+
+
 
 AuthAPI.setup();
 
@@ -28,10 +33,13 @@ const App = () => {
           <Navbar isAuthenticated={isAuthenticated} onLogout={setIsAuthenticated}/>
           <main className="container pt-5">
             <Routes>
-              <Route path="/" element={<HomePage/>}/>
+              <Route path="/" element={<HomePage isAuthenticated={isAuthenticated} onLogout={setIsAuthenticated}/>}/>
               <Route path="/customers" element={isAuthenticated && <CustomersPage/> || <Navigate to="/" replace />}/>
               <Route path="/customers/:id" element={isAuthenticated && <CustomerPage/> || <Navigate to="/" replace />}/>
               <Route path="/invoices" element={isAuthenticated && <InvoicesPage/> || <Navigate to="/" replace /> }/>
+              <Route path="/pdf/:id" element={isAuthenticated && <ViewPdf/> || <Navigate to="/" replace /> }/>
+              <Route path="/profile" element={isAuthenticated && <ProfilePage/> || <Navigate to="/" replace />}/>
+              <Route path="/profile/edit" element={isAuthenticated && <EditProfilePage/> || <Navigate to="/" replace />}/>
               <Route path="/invoices/:id" element={isAuthenticated && <InvoicePage/> || <Navigate to="/" replace />}/>
               <Route path="/login" element={!isAuthenticated && <LoginPage onLogin={setIsAuthenticated}/>|| <Navigate to="/" replace />}/>
               <Route path="/register" element={!isAuthenticated && <RegisterPage onLogin={setIsAuthenticated}/>|| <Navigate to="/" replace />}/>

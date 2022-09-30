@@ -6,7 +6,27 @@ function register(user){
         .post(USERS_API, user);
 }
 
+function find(id){
+    return axios
+        .get(`${USERS_API}/${id}`)
+        .then(response => response.data);
+}
+
+function update(id, user){
+    return axios
+        .put(USERS_API + "/" + id, user,{
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          })
+          .then(({data}) => console.log(data));
+}
+
+
+
 
 export default {
-    register
+    register,
+    find,
+    update
 }

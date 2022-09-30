@@ -40,6 +40,7 @@ class InvoiceRepository extends ServiceEntityRepository
 
         } catch (\Exception $e) {
             return 1;
+            
         }
 
         

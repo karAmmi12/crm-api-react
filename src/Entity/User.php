@@ -65,6 +65,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Customer::class)]
     private Collection $customers;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(["users_read"])]
+    private ?string $adresse = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(["users_read"])]
+    private ?string $company = null;
+
+    #[ORM\Column(length: 30, nullable: true)]
+    #[Groups(["users_read"])]
+    private ?string $phone = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(["users_read"])]
+    private ?string $logo = null;
+
     public function __construct()
     {
         $this->customers = new ArrayCollection();
@@ -190,6 +206,54 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $customer->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getAdresse(): ?string
+    {
+        return $this->adresse;
+    }
+
+    public function setAdresse(?string $adresse): self
+    {
+        $this->adresse = $adresse;
+
+        return $this;
+    }
+
+    public function getCompany(): ?string
+    {
+        return $this->company;
+    }
+
+    public function setCompany(?string $company): self
+    {
+        $this->company = $company;
+
+        return $this;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?string $phone): self
+    {
+        $this->phone = $phone;
+
+        return $this;
+    }
+
+    public function getLogo(): ?string
+    {
+        return $this->logo;
+    }
+
+    public function setLogo(?string $logo): self
+    {
+        $this->logo = $logo;
 
         return $this;
     }

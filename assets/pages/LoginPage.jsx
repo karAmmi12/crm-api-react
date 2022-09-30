@@ -32,7 +32,7 @@ const LoginPage = ({onLogin}) => {
             setError("");
             onLogin(true);
             toast.success("Vous êtes connecté ")
-            navigate("/customers")
+            navigate("/")
            
         } catch (error) {
             console.log(error.response)
