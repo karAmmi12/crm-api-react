@@ -16,7 +16,8 @@ const ProfilePage = () => {
         email: "",
         company:"",
         adresse:"",
-        phone:""
+        phone:"",
+        logo: ""
     });
     console.log(id)
     
@@ -25,14 +26,15 @@ const ProfilePage = () => {
     const fetchUser = async id => {
         try {
             
-            const {firstName, lastName, email, company, adresse, phone} = await UsersAPI.find(id);
+            const {firstName, lastName, email, company, adresse, phone, logo} = await UsersAPI.find(id);
             console.log(company)
                 setUser({firstName,
                      lastName, 
                      email, 
                      company: company?company:"",
                      adresse: adresse?adresse:"",
-                     phone: phone?phone:""
+                     phone: phone?phone:"",
+                     logo: logo?logo:""
                 })
                 
             
@@ -49,21 +51,20 @@ const ProfilePage = () => {
     
     console.log(user)
 
+    // mise en forme de la page
+
     return (
         
             <div className="card mb-3">
                 <h3 className="card-header">{user.firstName} {user.lastName}</h3>
                 <div className="card-body">
                     <h5 className="card-title">Entrprise : {user.company}</h5>
+                    <h5 className="card-subtitle text-muted">Siret N°: {user.siret}</h5>
                     <h6 className="card-subtitle text-muted">Adresse: {user.adresse}</h6>
                 </div>
-                <svg xmlns="http://www.w3.org/2000/svg" className="d-block user-select-none" width="200" height="200" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" >
-                    <rect width="100%" height="100%" fill="#868e96"></rect>
-                    <text x="50%" y="50%" fill="#dee2e6" dy=".3em">Logo</text>
-                </svg>
-                <div className="card-body">
-                    <p className="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                </div>
+                <img width="25%" src={"./media/"+user.logo} alt="logo" />
+                
+                
                 <ul className="list-group list-group-flush">
                     <li className="list-group-item">Email: {user.email}</li>
                     <li className="list-group-item">Téléphone: {user.phone}</li>
@@ -71,7 +72,7 @@ const ProfilePage = () => {
                 </ul>
                 <div className="card-body">
                     <Link to={"/profile/edit"} className="btn btn-primary">Completer mon profil</Link>
-                    <a href="#" className="card-link">Another link</a>
+                    
                 </div>
                 
             </div>

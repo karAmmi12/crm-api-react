@@ -15,9 +15,12 @@ import RegisterPage from './pages/RegisterPage';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+
 import ViewPdf from './pages/ViewPdf';
 import ProfilePage from './pages/ProfilePage';
 import EditProfilePage from './pages/EditProfilePage';
+import DtInvoicePage from './pages/DtInvoicePage';
+import Footer from './components/Footer';
 
 
 
@@ -41,11 +44,13 @@ const App = () => {
               <Route path="/profile" element={isAuthenticated && <ProfilePage/> || <Navigate to="/" replace />}/>
               <Route path="/profile/edit" element={isAuthenticated && <EditProfilePage/> || <Navigate to="/" replace />}/>
               <Route path="/invoices/:id" element={isAuthenticated && <InvoicePage/> || <Navigate to="/" replace />}/>
+              <Route path="/invoicedt/:id" element={isAuthenticated && <DtInvoicePage/> || <Navigate to="/" replace />}/>
               <Route path="/login" element={!isAuthenticated && <LoginPage onLogin={setIsAuthenticated}/>|| <Navigate to="/" replace />}/>
               <Route path="/register" element={!isAuthenticated && <RegisterPage onLogin={setIsAuthenticated}/>|| <Navigate to="/" replace />}/>
             </Routes>
             
           </main>
+          <Footer/>
         <ToastContainer position ={toast.POSITION.BOTTOM_LEFT} theme="colored"/>  
         </HashRouter>
     );

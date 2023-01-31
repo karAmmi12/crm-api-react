@@ -12,13 +12,17 @@ const CustomerPage = () => {
         lastName: "",
         firstName :"",
         email: "",
-        company:""
+        company:"",
+        address:"",
+        phone:""
     });
     const [errors, setErrors] = useState({
         lastName: "",
         firstName :"",
         email: "",
-        company:"" 
+        company:"",
+        address:"",
+        phone:"" 
 
     });
     const [editing, setEditing] = useState(false)
@@ -28,9 +32,9 @@ const CustomerPage = () => {
     //recuperation du customer grace à l'id
     const fetchCustomer = async id =>{ 
         try {       
-            const {firstName, lastName, email, company } = await CustomersAPI.find(id);
+            const {firstName, lastName, email, company, address, phone } = await CustomersAPI.find(id);
             
-            setCustomer({firstName, lastName, email, company})
+            setCustomer({firstName, lastName, email, company, address, phone})
     
         } catch (error) {
             
@@ -98,7 +102,8 @@ const CustomerPage = () => {
                 <Field name="firstName" label="Prénom" placeholder="Prénom du client" value={customer.firstName} onChange={handleChange} error={errors.firstName}/>
                 <Field name="email" label="Email" placeholder="Adresse email du client" type="email" value={customer.email} onChange={handleChange}error={errors.email}/>
                 <Field name="company" label="Entreprise" placeholder="Entreprise du client"value={customer.company} onChange={handleChange} error={errors.company}/>
-
+                <Field name="address" label="Adresse" placeholder="Adresse du client"value={customer.address} onChange={handleChange} error={errors.address}/>
+                <Field name="phone" label="Téléphone" placeholder="Téléphone du client"value={customer.phone} onChange={handleChange} error={errors.phone}/>
                  <div className="form-group">
                     <button type="submit" className="btn btn-success">Enregistrer</button>
                     <Link to="/customers" className='btn btn-link' >Retour à la liste</Link>

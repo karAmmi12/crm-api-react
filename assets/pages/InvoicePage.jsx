@@ -5,13 +5,16 @@ import { toast } from 'react-toastify';
 import Field from '../components/forms/Field';
 import Select from '../components/forms/Select';
 import CustomersAPI from '../services/customersAPI';
+import InvoiceDtAPI from '../services/invoiceDtAPI';
 import InvoicesAPI from '../services/invoicesAPI';
+
+
 
 
 const InvoicePage = () => {
 
     const [invoice, setInvoice] = useState({
-        amount: "",
+        amount: 0,
         customer :"",
         status: "SENT",
        
@@ -39,6 +42,7 @@ const InvoicePage = () => {
                 
             }
             
+            
         } catch (error) {
             console.log(error.response)
             toast.error("Impossible de charger les clients !")
@@ -52,6 +56,7 @@ const InvoicePage = () => {
     const fetchInvoice = async id => {
         try {
             
+            
             const {amount, status, customer} = await InvoicesAPI.find(id);
             
                 setInvoice({amount, status, customer :customer.id})
@@ -63,20 +68,60 @@ const InvoicePage = () => {
         }
 
     }
+    const idInv = id;
+
+    const [detailsInvoice, setDetailsInvoice] = useState([]);
+
+    const fetchFullInvoice = async id => {
+        try {
+            const data = await InvoicesAPI.find(id);
+            setDetailsInvoice(data.invoiceDetails);
+            
+            
+            
+
+        } catch {
+            
+            
+        }
+
+    };
         
     useEffect(() => {
         fetchCustomers();
+        
+       
     
     }, []);
 
     useEffect(() => {
         if(id !== "new"){ 
-            
-            fetchInvoice(id);
             setEditing(true);
+            fetchFullInvoice(id);
+            fetchInvoice(id);
+            
         }   
 
     }, [id])
+
+    //gestion de la suppression d'un article
+    const handleDelete = async id => {
+
+        const originalDtInvoice = [...detailsInvoice];
+
+        setDetailsInvoice(detailsInvoice.filter(item => item.id !== id));
+
+        try {
+            await InvoiceDtAPI.delete(id);
+            toast.success("L'article a bien été supprimée! ")
+        } catch (error) {
+            console.log(error.response)
+            toast.error("une erreur est survenue!")
+            setDetailsInvoice(originalDtInvoices);
+        }
+
+
+    };
     
 
      //gestion des inputs dans le form
@@ -122,12 +167,16 @@ const InvoicePage = () => {
         }
     }
 
+    console.log(invoice)
+    
+
 
     return (
         <>
             {(!editing && <h1>Création d'une facture</h1> )|| (<h1>Modifier une facture</h1>)}
             <form onSubmit={handleSubmit}>
-                <Field name="amount" type='number' label="Montant" placeholder="Montant de la facture" value={invoice.amount} onChange={handleChange} error={errors.amount}/>
+                
+                <Field name="amount" type='number' disabled="disabled" label="Montant" placeholder="Montant de la facture" value={invoice.amount} onChange={handleChange} error={errors.amount}/>
                 <Select 
                     name="customer"
                     label ="Client"
@@ -154,11 +203,59 @@ const InvoicePage = () => {
 
                  <div className="form-group">
                     <button type="submit" className="btn btn-success">Enregistrer</button>
-                    <Link to="/invoices" className='btn btn-link' >Retour à la liste</Link>
+                    <Link to="/invoices" className='btn btn-secondary' >Retour à la liste</Link>
+                    {editing && <Link to="/invoicedt/new" state={ idInv} className='btn btn-primary'>Ajouter un article</Link>}
                   
                 </div>  
 
             </form>
+            
+            {detailsInvoice.length >0 && <table className="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>N°</th>
+                                <th>Description</th>
+                                <th>Prix U</th>
+                                <th>quantité</th>
+                                <th>Montant</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {detailsInvoice.map(item =>
+                        
+                        <tr key={item.id}>
+                            <td>{item.key}</td>
+                            <td>
+                            {item.description} 
+                            </td>
+                            <td>{item.price}</td>
+                            <td>
+                                <span>{item.quantity}</span>
+                            </td>
+                            <td>{item.itemAmount} €</td>
+                            <td>
+                                <Link to={`/invoicedt/${item.id}`} className="btn btn-sm btn-dark">Editer</Link>
+                                <button
+                                    onClick={() => handleDelete(item.id)}
+
+                                    className="btn btn-sm btn-danger">
+                                    Supprimer
+                                </button>
+                            </td>
+                        </tr>)}
+                        
+                            
+
+                        </tbody>
+
+                            
+                        </table>}
+
+
+            
+           
+            
 
             
             

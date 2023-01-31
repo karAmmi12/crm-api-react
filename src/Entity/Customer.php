@@ -72,6 +72,15 @@ class Customer
     #[Assert\NotBlank(message:"l'utilisateur est obligatoire!")]
     private ?User $user = null;
 
+
+    #[ORM\Column(length: 20, nullable: true)]
+    #[Groups(["customers_read","invoices_read"])]
+    private ?string $phone = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(["customers_read","invoices_read"])]
+    private ?string $address = null;
+
     public function __construct()
     {
         $this->invoices = new ArrayCollection();
@@ -190,6 +199,31 @@ class Customer
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?string $phone): self
+    {
+        $this->phone = $phone;
+
+        return $this;
+    }
+
+    public function getAddress(): ?string
+    {
+        return $this->address;
+    }
+
+    public function setAddress(?string $address): self
+    {
+        $this->address = $address;
 
         return $this;
     }

@@ -34,6 +34,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column]
     private array $roles = [];
+    
 
     /**
      * @var string The hashed password
@@ -66,24 +67,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $customers;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(["users_read"])]
+    #[Groups(["invoices_read","customers_read","users_read"])]
     private ?string $adresse = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(["users_read"])]
+    #[Groups(["invoices_read","customers_read","users_read"])]
     private ?string $company = null;
 
     #[ORM\Column(length: 30, nullable: true)]
-    #[Groups(["users_read"])]
+    #[Groups(["invoices_read","customers_read","users_read"])]
     private ?string $phone = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(["users_read"])]
-    private ?string $logo = null;
+    #[Groups(["invoices_read","customers_read","users_read"])]
+    private ?string $logo = "";
+
+    #[ORM\Column(length: 20, nullable: true)]
+    #[Groups(["invoices_read","customers_read","users_read"])]
+    private ?string $siret = null;
+
 
     public function __construct()
     {
         $this->customers = new ArrayCollection();
+        
     }
 
     public function getId(): ?int
@@ -246,8 +253,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    
     public function getLogo(): ?string
     {
+        
         return $this->logo;
     }
 
@@ -257,4 +266,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    public function getSiret(): ?string
+    {
+        return $this->siret;
+    }
+
+    public function setSiret(?string $siret): self
+    {
+        $this->siret = $siret;
+
+        return $this;
+    }
+
+    
+
+    
+
+    
 }

@@ -50,6 +50,7 @@ class InvoiceRepository extends ServiceEntityRepository
     public function add(Invoice $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
+        
 
         if ($flush) {
             $this->getEntityManager()->flush();
@@ -80,13 +81,13 @@ class InvoiceRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?Invoice
-//    {
-//        return $this->createQueryBuilder('i')
-//            ->andWhere('i.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+   public function findOneBySomeField($value): ?Invoice
+   {
+       return $this->createQueryBuilder('i')
+           ->andWhere('i.id = :val')
+           ->setParameter('val', $value)
+           ->getQuery()
+           ->getOneOrNullResult()
+       ;
+   }
 }

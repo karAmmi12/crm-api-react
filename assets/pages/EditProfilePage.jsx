@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Field from '../components/forms/Field';
+import LogosAPI from '../services/logosAPI';
 import UsersAPI from '../services/usersAPI';
 
 const EditProfilePage = () => {
@@ -14,18 +15,22 @@ const EditProfilePage = () => {
         lastName: "",
         email: "",
         company:"",
+        siret:"",
         adresse:"",
-        phone:"",
-        logo:""
+        phone:""
+        
     });
+    const [selectedFile, setSelectedFile] = useState();
+    const [isFilePicked, setIsFilePicked] = useState(false);
     const [errors, setErrors] = useState({
         firstName: "",
         lastName: "",
         email: "",
         company:"",
+        siret:"",
         adresse:"",
-        phone:"",
-        logo: ""
+        phone:""
+        
     });
     let navigate = useNavigate();
 
@@ -33,9 +38,9 @@ const EditProfilePage = () => {
     const fetchUser = async id => {
         try {
             
-            const {firstName, lastName, email, company, adresse, phone, logo} = await UsersAPI.find(id);
+            const {firstName, lastName, email, company,siret, adresse, phone} = await UsersAPI.find(id);
             
-                setUser({firstName, lastName, email, company, adresse, phone, logo})
+                setUser({firstName, lastName, email, company,siret, adresse, phone})
             
         } catch (error) {
             console.log(error.response)
@@ -57,28 +62,39 @@ const EditProfilePage = () => {
      //gestion des inputs dans le form
      const handleChange = ({ currentTarget }) => {
         const {name, value } = currentTarget;
+        
+
+
         //gestion du nom du logo
-        const extention = user.logo.split(".").pop();
-            function makeid(length) {
-                var result           = '';
-                var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-                var charactersLength = characters.length;
-                for ( var i = 0; i < length; i++ ) {
-                  result += characters.charAt(Math.floor(Math.random() * 
-             charactersLength));
-               }
-               return result;
-            }
+        // const extention = user.logo.split(".").pop();
+        //     function makeid(length) {
+        //         var result           = '';
+        //         var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        //         var charactersLength = characters.length;
+        //         for ( var i = 0; i < length; i++ ) {
+        //           result += characters.charAt(Math.floor(Math.random() * 
+        //      charactersLength));
+        //        }
+        //        return result;
+        //     }
             
             
                 
-                const logoname = makeid(5)+"."+ extention;
-                console.log(logoname)
+        //         const logoname = makeid(5)+"."+ extention;
+        //         console.log(logoname)
 
 
-        setUser({...user, [name]: value, logo:logoname});
+        setUser({...user, [name]: value});
         
+        console.log(user)
     }
+    const handleChangeFile = (event) => {
+		setSelectedFile(event.target.files[0]);
+		setIsFilePicked(true);
+       
+	};
+    console.log(isFilePicked)
+    console.log(selectedFile)
     
 
     //Gestion de la soumission du form
@@ -88,13 +104,33 @@ const EditProfilePage = () => {
 
         try {
             
-           
-            
-                
+           console.log(user)
                 await UsersAPI.update(id, user)
                 toast.success("Le profil a bien été modifié.")
                 setErrors({});
                 navigate('/profile')
+                
+                if (isFilePicked) {
+                    const formData = new FormData();
+
+		            formData.append('file', selectedFile);
+
+                    await LogosAPI.create(formData)
+
+                    await UsersAPI.update(id, user)
+                    toast.success("Le profil a bien été modifié.")
+                    setErrors({});
+                    navigate('/profile');
+
+                    
+                    
+                }else{
+                    await UsersAPI.update(id, user)
+                    toast.success("Le profil a bien été modifié.")
+                    setErrors({});
+                    navigate('/profile')
+
+                }
                
             
             
@@ -143,15 +179,24 @@ const EditProfilePage = () => {
                     name ="company"
                     value = {user.company}
                     onChange={handleChange}
-                    placeholder="l'adresse de votre entreprise"
+                    placeholder="le nom de votre entreprise"
                     error = {errors.company}
+
+                />
+                <Field
+                    label ="N° SIRET" 
+                    name ="siret"
+                    value = {user.siret}
+                    onChange={handleChange}
+                    placeholder="le n° SIRET de votre entreprise"
+                    error = {errors.siret}
 
                 />
                 <Field
                     label = "Logo"
                     name="logo"
                     type="file"
-                    onChange={handleChange}
+                    onChange={handleChangeFile}
                     placeholder="logo de votre entreprise"
                     error = {errors.logo}
                     

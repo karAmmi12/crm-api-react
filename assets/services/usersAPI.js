@@ -14,13 +14,9 @@ function find(id){
 
 function update(id, user){
     return axios
-        .put(USERS_API + "/" + id, user,{
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
-          })
-          .then(({data}) => console.log(data));
+        .put(USERS_API + "/" + id, user);
 }
+
 
 
 
@@ -29,4 +25,5 @@ export default {
     register,
     find,
     update
+    
 }

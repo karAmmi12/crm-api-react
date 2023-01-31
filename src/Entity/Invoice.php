@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Entity\User;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\InvoiceRepository;
@@ -16,7 +18,9 @@ use Symfony\Component\Validator\Constraints as Assert;
         ["pagination_enabled" => false,
          "pagination_items_per_page" => 20,
          "order"=> ["sentAt" => "desc"]
+         
         ],
+    
     normalizationContext: ['groups' => ['invoices_read']],
     denormalizationContext: ['disable_type_enforcement' => true ]
 
@@ -27,11 +31,11 @@ class Invoice
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["invoices_read","customers_read"])]
+    #[Groups(["invoices_read","customers_read",'invoices_dt_read'])]
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups(["invoices_read","customers_read"])]
+    #[Groups(["invoices_read","customers_read",'invoices_dt_read'])]
     #[Assert\NotBlank(message:"le montant de la facture est obligatoire!")]
     #[Assert\Type(
         type: 'numeric',
@@ -55,7 +59,7 @@ class Invoice
     #[ORM\ManyToOne(inversedBy: 'invoices')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(["invoices_read"])]
-    #[Assert\NotBlank(message:"le client de la facturedoit être renseigné !")]
+    #[Assert\NotBlank(message:"le client de la facture doit être renseigné !")]
     private ?Customer $customer = null;
 
     #[ORM\Column]
@@ -65,7 +69,15 @@ class Invoice
         type: 'integer',
         message: "le numero doit être un entier!"
     )]
-    private $invNumber = null;
+    private ?int  $invNumber = null;
+
+    #[ORM\OneToMany(mappedBy: 'invoice', targetEntity: InvoiceDetail::class)]
+    private Collection $invoiceDetails;
+
+    public function __construct()
+    {
+        $this->invoiceDetails = new ArrayCollection();
+    }
 
     /**
      * Récuperer le user à qui appartient la facture
@@ -137,6 +149,37 @@ class Invoice
     public function setInvNumber($invNumber): self
     {
         $this->invNumber = $invNumber;
+
+        return $this;
+    }
+
+    /**
+     * @Groups({"invoices_read"})
+     * @return Collection<int, InvoiceDetail>
+     */
+    public function getInvoiceDetails(): Collection
+    {
+        return $this->invoiceDetails;
+    }
+
+    public function addInvoiceDetail(InvoiceDetail $invoiceDetail): self
+    {
+        if (!$this->invoiceDetails->contains($invoiceDetail)) {
+            $this->invoiceDetails->add($invoiceDetail);
+            $invoiceDetail->setInvoice($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInvoiceDetail(InvoiceDetail $invoiceDetail): self
+    {
+        if ($this->invoiceDetails->removeElement($invoiceDetail)) {
+            // set the owning side to null (unless already changed)
+            if ($invoiceDetail->getInvoice() === $this) {
+                $invoiceDetail->setInvoice(null);
+            }
+        }
 
         return $this;
     }

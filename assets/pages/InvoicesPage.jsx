@@ -24,7 +24,8 @@ const InvoicesPage = (props) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [search, setSearch] = useState("");
     const itemsPerPage = 8;
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(true);
+    
 
     // récuperation des invoices auprès de l'API
     const fetchInvoices = async () => {
@@ -94,7 +95,7 @@ const InvoicesPage = (props) => {
     const paginatedInvoices = Pagination.getData(filteredInvoices, currentPage, itemsPerPage);
 
 
-
+    
 
 
 
@@ -123,6 +124,7 @@ const InvoicesPage = (props) => {
                 {!loading && <tbody>
 
                     {paginatedInvoices.map(invoice =>
+                        
                         <tr key={invoice.id}>
                             <td>{invoice.invNumber}</td>
                             <td>
@@ -137,20 +139,25 @@ const InvoicesPage = (props) => {
                                 <Link to={`/invoices/${invoice.id}`} className="btn btn-sm btn-dark">Editer</Link>
                                 <button
                                     onClick={() => handleDelete(invoice.id)}
+                                    disabled={invoice.invoiceDetails.length>0}
 
                                     className="btn btn-sm btn-danger">
                                     Supprimer
                                 </button>
-                                <Link to={`/pdf/${invoice.id}`} className="btn btn-sm btn-dark">Editer</Link>
+                                <Link to={`/pdf/${invoice.id}`} className="btn btn-sm btn-dark">PDF</Link>
                                 
                             </td>
-                        </tr>)}
+                        </tr>
+                        
+                        )}
                 </tbody>}
 
             </table>
             {loading && <TableLoader/>}
-            <Pagination currentPage={currentPage} itemsPerPage={itemsPerPage} length={filteredInvoices.length} onPageChanged={handlePageChange} />
+            {invoices.length>8 && <Pagination currentPage={currentPage} itemsPerPage={itemsPerPage} length={filteredInvoices.length} onPageChanged={handlePageChange} />}
         </>
+
+        
     );
 };
 

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import Logo from '../components/Logo';
 
 
+
 const HomePage = ({isAuthenticated}) => {
     const [user, setUser] = useState({
         firstName:"",
@@ -35,7 +36,7 @@ const HomePage = ({isAuthenticated}) => {
 
     return (
         <div className=" d-flex flex-column">
-            {(!isAuthenticated && <h2 className="text-center m-5">VOTRE CRM EN UN CLIC!!</h2>)||
+            {(!isAuthenticated && <h2 className="text-center m-5">"Gérez vos clients et vos factures en toute simplicité - Gratuitement!"</h2>)||
             (<h2 className="text-center m-5">Bienvenue {user.firstName} {user.lastName}</h2>)
 
             

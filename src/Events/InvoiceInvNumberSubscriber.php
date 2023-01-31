@@ -40,19 +40,26 @@ class InvoiceInvNumberSubscriber implements EventSubscriberInterface {
 
         if($invoice instanceof Invoice && $method === "POST")
         {
+            
             //on a besoin de l'utilisateur actuellement connecté (security)
             // on a besoin du repository des factures (InvoiceRepository)
             //recuperer la derniere facture qui a été inserée et choper son InvNumber
             // incrementer l'InvNumber de la nouvelle facture au dernier invNumber récupéré
+            
+        
+            
+           
 
             $nextInvNumber = $this->invoiceRepository->findNextInvNumber($this->security->getUser());
             $invoice->setInvNumber($nextInvNumber);
+          
 
             if(empty($invoice->getSentAt())){
                 $invoice->setSentAt(new DateTime());
             }
 
         }
+        
 
         
     }

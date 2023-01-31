@@ -140,6 +140,7 @@ const CustomersPage = props => {
                 
 
             </table>
+            
             {loading && <TableLoader/>}
             {
                 itemsPerPage < filteredCustomers.length &&
